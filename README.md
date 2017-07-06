@@ -31,3 +31,16 @@ using the `admin` user on `https://<your-domain>/admin` to change settings.
 - To set a daily cronjob at 05:52
   - `sudo crontab -e` and add the following line (change the path below to your `etherpad-lite/docker` directory path)
   - `52 5 * * * (cd <PATH_TO_etherpad-lite/docker> && sudo ./backup.sh)`
+
+## Useful commands
+List number of pads sorted by number of revisions (adapted from https://github.com/ether/etherpad-lite/wiki/How-to-list-all-pads):
+
+- `sudo docker exec -it ep-mysql bash`
+- Run the following command (retrieve mysql root password from `docker/docker-compose.yml`):
+mysql -u root -p etherpad -e 'select store.key from store'  \
+>    | grep -Eo '^pad:[^:]+' \
+>    | sed -e 's/pad://' \
+>    | sort \
+>    | uniq -c \
+>    | sort -rn \
+>    | awk '{if ($1!="2") {print $2 }}'
